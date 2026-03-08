@@ -44,7 +44,8 @@ Generate 10 tweets matching that tone.
     ],
     temperature=0.8
 )
-    result = response['choices'][0]['message']['content']
+   tweet = response.choices[0].message.content
 
-    st.write(result)
+    st.write(tweet)
+
 
