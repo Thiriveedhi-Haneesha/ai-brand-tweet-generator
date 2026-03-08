@@ -1,29 +1,19 @@
 import streamlit as st
-from openai import OpenAI
+import random
 
-# Page configuration
-st.set_page_config(
-    page_title="AI Brand Tweet Generator",
-    page_icon="🐦",
-    layout="wide"
-)
+st.set_page_config(page_title="AI Brand Tweet Generator", page_icon="🐦", layout="wide")
 
-# Initialize OpenAI client
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-
-# Title
 st.title("🐦 AI Brand Tweet Generator")
-st.write("Generate a **brand summary and 10 engaging tweets** instantly.")
+st.write("Generate a **Brand Summary** and **10 marketing tweets** for your brand.")
 
 st.divider()
 
-# Input layout
 col1, col2 = st.columns(2)
 
 with col1:
     brand = st.text_input("Brand Name")
     industry = st.text_input("Industry")
-    campaign = st.text_input("Tweet Goal (Promotion, Awareness, Launch etc.)")
+    goal = st.text_input("Tweet Goal (Promotion, Awareness, Launch etc.)")
 
 with col2:
     description = st.text_area("Brand Description")
@@ -36,47 +26,53 @@ st.divider()
 
 generate = st.button("🚀 Generate Tweets")
 
-# Generate tweets
 if generate:
-
-    if not brand or not industry or not campaign or not description:
+    if not brand or not industry or not goal or not description:
         st.warning("Please fill all fields.")
     else:
+        # Brand summary generation
+        audiences = [
+            "young professionals",
+            "tech enthusiasts",
+            "fitness lovers",
+            "creative entrepreneurs",
+            "modern lifestyle seekers"
+        ]
 
-        prompt = f"""
-        You are an AI social media assistant.
+        themes = [
+            "innovation",
+            "community engagement",
+            "product benefits",
+            "lifestyle inspiration",
+            "customer success"
+        ]
 
-        Brand Name: {brand}
-        Industry: {industry}
-        Goal: {campaign}
-        Brand Description: {description}
-        Tone: {tone}
+        audience = random.choice(audiences)
 
-        First create a BRAND SUMMARY including:
-        - Tone
-        - Target Audience
-        - Content Themes (3–5 themes)
+        st.subheader("📊 Brand Summary")
 
-        Then generate 10 Twitter/X tweets for this brand.
+        st.markdown(f"""
+**Tone:** {tone}  
+**Target Audience:** {audience} interested in {industry}  
+**Content Themes:** {themes[0]}, {themes[1]}, {themes[2]}, {themes[3]}
+""")
 
-        Rules:
-        - Each tweet under 280 characters
-        - Include relevant hashtags
-        - Make them engaging and marketing-focused
-        - Number tweets from 1 to 10
-        """
+        st.subheader("🐦 Generated Tweets")
 
-        with st.spinner("Generating tweets..."):
+        tweet_templates = [
+            f"{brand} is changing the {industry} game. Stay ahead with us! #{brand} #{industry}",
+            f"Big things are happening at {brand}. Join the movement! #{brand} #Innovation",
+            f"Ready for the future of {industry}? {brand} has you covered. #{brand}",
+            f"Experience the power of {brand}. Built for people who love {industry}. #{brand}",
+            f"{brand} brings fresh energy to {industry}. Let’s grow together. #{brand}",
+            f"Smarter. Better. Faster. That’s the {brand} way. #{brand}",
+            f"Your journey in {industry} starts with {brand}. #{brand}",
+            f"Discover what makes {brand} different in the world of {industry}. #{brand}",
+            f"Innovation meets passion at {brand}. #{brand} #{industry}",
+            f"The future of {industry} is here with {brand}. #{brand}"
+        ]
 
-            response = client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.8
-            )
+        random.shuffle(tweet_templates)
 
-            output = response.choices[0].message.content
-
-        st.success("Tweets Generated!")
-
-        st.subheader("📊 Brand Summary & Tweets")
-        st.write(output)
+        for i in range(10):
+            st.write(f"{i+1}. {tweet_templates[i]}")
