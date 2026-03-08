@@ -1,42 +1,56 @@
 import streamlit as st
 from openai import OpenAI
 
-# Page title
-st.title("AI Brand Tweet Generator")
-st.write("Generate engaging tweets for your brand using AI")
+# Page config
+st.set_page_config(page_title="AI Brand Tweet Generator", page_icon="🐦")
 
-# Initialize OpenAI client
+st.title("🐦 AI Brand Tweet Generator")
+st.write("Generate engaging marketing tweets for your brand.")
+
+# Initialize OpenAI
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-# User input
-brand = st.text_input("Enter your brand name")
+# User Inputs
+brand = st.text_input("Brand Name")
+industry = st.text_input("Industry (e.g., Fashion, Tech, Fitness)")
+campaign = st.text_input("Campaign Goal (e.g., Product Launch, Sale Promotion)")
+description = st.text_area("Brand Description")
 
-# Button
+# Generate Button
 if st.button("Generate Tweets"):
 
-    if brand == "":
-        st.warning("Please enter a brand name")
+    if not brand or not industry or not campaign or not description:
+        st.warning("Please fill in all fields.")
     else:
 
         prompt = f"""
-        Generate 3 engaging Twitter/X tweets for the brand "{brand}".
+        Create 3 engaging Twitter/X tweets for a brand.
 
-        Requirements:
+        Brand Name: {brand}
+        Industry: {industry}
+        Campaign Goal: {campaign}
+        Brand Description: {description}
+
+        Rules:
         - Each tweet must be under 280 characters
-        - Make them catchy and marketing focused
-        - Add relevant hashtags
-        - Friendly brand voice
+        - Use a catchy marketing tone
+        - Include relevant hashtags
+        - Separate each tweet clearly
         """
 
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.8
-        )
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.8
+            )
 
-        tweets = response.choices[0].message.content
+            tweets = response.choices[0].message.content
 
-        st.subheader("Generated Tweets")
-        st.write(tweets)
+            st.subheader("Generated Tweets")
+            st.write(tweets)
+
+        except Exception as e:
+            st.error(f"Error: {e}")
