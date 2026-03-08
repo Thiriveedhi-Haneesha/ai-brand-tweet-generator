@@ -1,5 +1,8 @@
 import streamlit as st
-import openai
+from openai import OpenAI
+import streamlit as st
+
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 import os
 from dotenv import load_dotenv
 
@@ -34,12 +37,14 @@ Step 2:
 Generate 10 tweets matching that tone.
 """
 
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.8
-    )
-
+    response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "user", "content": prompt}
+    ],
+    temperature=0.8
+)
     result = response['choices'][0]['message']['content']
 
     st.write(result)
+
