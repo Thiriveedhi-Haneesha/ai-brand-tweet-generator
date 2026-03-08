@@ -1,51 +1,42 @@
 import streamlit as st
 from openai import OpenAI
-import streamlit as st
 
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
+# Page title
 st.title("AI Brand Tweet Generator")
+st.write("Generate engaging tweets for your brand using AI")
 
-brand_name = st.text_input("Brand Name")
-industry = st.text_input("Industry")
-objective = st.selectbox(
-    "Campaign Objective",
-    ["Engagement", "Promotion", "Awareness"]
-)
+# Initialize OpenAI client
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-product_info = st.text_area("Product Description")
+# User input
+brand = st.text_input("Enter your brand name")
 
+# Button
 if st.button("Generate Tweets"):
 
-    prompt = f"""
-Analyze this brand and generate tweets.
+    if brand == "":
+        st.warning("Please enter a brand name")
+    else:
 
-Brand Name: {brand_name}
-Industry: {industry}
-Objective: {objective}
-Product: {product_info}
+        prompt = f"""
+        Generate 3 engaging Twitter/X tweets for the brand "{brand}".
 
-Step 1:
-Give 3 bullet points describing brand voice.
+        Requirements:
+        - Each tweet must be under 280 characters
+        - Make them catchy and marketing focused
+        - Add relevant hashtags
+        - Friendly brand voice
+        """
 
-Step 2:
-Generate 10 tweets matching that tone.
-"""
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.8
+        )
 
-    response = client.chat.completions.create(
-    model="gpt-4o-mini",
-    messages=[
-        {"role": "user", "content": prompt}
-    ],
-    temperature=0.8
-)
-   tweet = response.choices[0].message.content
+        tweets = response.choices[0].message.content
 
-    st.write(tweet)
-
-
+        st.subheader("Generated Tweets")
+        st.write(tweets)
